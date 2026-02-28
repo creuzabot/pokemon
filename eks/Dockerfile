@@ -13,8 +13,9 @@ RUN apt-get update && apt-get install -y \
 RUN npm install -g openclaw
 
 # Cria diretório de dados e copia config
-RUN mkdir -p /data/.openclaw/workspace
+RUN mkdir -p /data/.openclaw/workspace /root/.openclaw
 COPY openclaw.json /data/.openclaw/openclaw.json
+COPY openclaw.json /root/.openclaw/openclaw.json
 
 # Configura variáveis de ambiente
 ENV OPENCLAW_DATA_DIR=/data/.openclaw
