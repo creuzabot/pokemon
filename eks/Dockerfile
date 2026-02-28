@@ -27,4 +27,5 @@ EXPOSE 18789
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:18789/ || exit 1
 
+ENV NODE_OPTIONS="--max-old-space-size=1536"
 CMD ["openclaw", "gateway", "run", "--bind", "lan", "--allow-unconfigured"]
