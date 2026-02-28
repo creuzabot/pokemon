@@ -1,0 +1,13 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 173815057423.dkr.ecr.us-east-1.amazonaws.com
+  build:
+    commands:
+      - cd eks
+      - docker build -t creuza .
+      - docker tag creuza:latest 173815057423.dkr.ecr.us-east-1.amazonaws.com/creuza:latest
+  post_build:
+    commands:
+      - docker push 173815057423.dkr.ecr.us-east-1.amazonaws.com/creuza:latest
