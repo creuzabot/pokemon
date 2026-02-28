@@ -6,7 +6,7 @@ metadata:
   labels:
     app: creuza
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: creuza
@@ -54,10 +54,10 @@ spec:
           resources:
             requests:
               cpu: "250m"
-              memory: "1Gi"
+              memory: "512Mi"
             limits:
               cpu: "1000m"
-              memory: "2Gi"
+              memory: "1Gi"
           livenessProbe:
             httpGet:
               path: /
