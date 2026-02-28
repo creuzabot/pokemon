@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: creuza
+  namespace: creuza
+  labels:
+    app: creuza
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: creuza
+  template:
+    metadata:
+      labels:
+        app: creuza
+    spec:
+      serviceAccountName: creuza-sa
+      containers:
+        - name: creuza
+          image: <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/creuza:latest
+          ports:
+            - containerPort: 18789
+          env:
+            - name: ANTHROPIC_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: creuza-secrets
+                  key: ANTHROPIC_API_KEY
+            - name: TELEGRAM_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: creuza-secrets
+                  key: TELEGRAM_BOT_TOKEN
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: creuza-secrets
+                  key: GITHUB_TOKEN
+            - name: GMAIL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: creuza-secrets
+                  key: GMAIL_PASSWORD
+            - name: GMAIL_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: creuza-secrets
+                  key: GMAIL_ADDRESS
+            - name: AWS_REGION
+              value: "us-east-1"
+            - name: DYNAMODB_TABLE
+              value: "creuza-state"
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 18789
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 18789
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - name: workspace
+              mountPath: /data/.openclaw/workspace
+      volumes:
+        - name: workspace
+          emptyDir: {}
