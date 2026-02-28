@@ -1,0 +1,34 @@
+name: Build e Push para ECR
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'eks/Dockerfile'
+      - '.github/workflows/build.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login no ECR
+        run: |
+          aws ecr get-login-password --region us-east-1 | \
+          docker login --username AWS --password-stdin \
+          173815057423.dkr.ecr.us-east-1.amazonaws.com
+
+      - name: Build e Push
+        run: |
+          docker build -t creuza eks/
+          docker tag creuza:latest 173815057423.dkr.ecr.us-east-1.amazonaws.com/creuza:latest
+          docker push 173815057423.dkr.ecr.us-east-1.amazonaws.com/creuza:latest
