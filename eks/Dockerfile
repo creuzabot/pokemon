@@ -12,8 +12,9 @@ RUN apt-get update && apt-get install -y \
 # Instala OpenClaw globalmente
 RUN npm install -g openclaw
 
-# Cria diretório de dados
+# Cria diretório de dados e copia config
 RUN mkdir -p /data/.openclaw/workspace
+COPY openclaw.json /data/.openclaw/openclaw.json
 
 # Configura variáveis de ambiente
 ENV OPENCLAW_DATA_DIR=/data/.openclaw
@@ -26,4 +27,4 @@ EXPOSE 18789
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:18789/ || exit 1
 
-CMD ["openclaw", "gateway", "run", "--bind", "lan"]
+CMD ["openclaw", "gateway", "run", "--bind", "lan", "--allow-unconfigured"]
