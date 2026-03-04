@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'eks/Dockerfile'
+      - 'eks/openclaw.json'
       - '.github/workflows/build.yml'
   workflow_dispatch:
 
@@ -32,3 +33,10 @@ jobs:
           docker build -t creuza eks/
           docker tag creuza:latest 173815057423.dkr.ecr.us-east-1.amazonaws.com/creuza:latest
           docker push 173815057423.dkr.ecr.us-east-1.amazonaws.com/creuza:latest
+
+      - name: Rollout no EKS
+        run: |
+          aws eks update-kubeconfig --region us-east-1 --name mechanical-eks-cluster
+          kubectl rollout restart deployment/creuza -n creuza
+          kubectl rollout status deployment/creuza -n creuza --timeout=120s
+
